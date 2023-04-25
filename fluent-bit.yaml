@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: pod
+metadata:
+  name: fluent-bit
+data:
+  fluent-bit.conf: |
+    [INPUT]
+        Name cpu
+        Tag cpu
+    [OUTPUT]
+        Name s3
+        Match *
+        tls.verify false
+        log_key log
+        bucket bucket_details
+        endpoint URL
+		s3_key_format /to/the/path/file_%Y%M%D.log
+        store_dir /data/ec2-user/buffer
+		static_file_path true
+spec:
+  hostAliases:
+  - ip: "240b:c0e0:102:553e:b4c2:2::"
+    hostnames:
+    - "minio"
+  containers:
+  - name: fluent-bit
+    image: klstg-docker.slb-wartifactory-v.stg.rmn.local/mobileum/wsms/fluent-bit:2.1
+    env:
+    - name: AWS_ACCESS_KEY_ID
+      value: "AWS_ACCESS_KEY_ID_value"
+    - name: AWS_SECRET_ACCESS_KEY
+      value: "AWS_SECRET_ACCESS_KEY_value"
+    command: ["/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf"]
+
+
+    volumeMounts:
+    - mountPath: /opt/Roamware/logs/
+      name: logs
+    - mountPath: /fluentd/etc/
+      name: config-volume
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-h6mq4
+      readOnly: true
