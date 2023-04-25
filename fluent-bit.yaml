@@ -31,13 +31,10 @@ spec:
     - name: AWS_SECRET_ACCESS_KEY
       value: "AWS_SECRET_ACCESS_KEY_value"
     command: ["/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf"]
-
-
     volumeMounts:
-    - mountPath: /opt/Roamware/logs/
-      name: logs
-    - mountPath: /fluentd/etc/
-      name: config-volume
-    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-      name: kube-api-access-h6mq4
-      readOnly: true
+      - mountPath: /fluent-bit/etc/
+        name: config-fluent
+  volumes:
+    - name: config-fluent
+      configMap:
+        name: fluent-bit-configmap
