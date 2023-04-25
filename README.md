@@ -1,0 +1,1 @@
+# fluent-bit-s3-minio-k8s
