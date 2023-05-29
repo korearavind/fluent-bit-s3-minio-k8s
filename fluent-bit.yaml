@@ -19,7 +19,7 @@ data:
         static_file_path true
 spec:
   hostAliases:
-  - ip: "240b:c0e0:102:553e:b4c2:2::"
+  - ip: "IP_Address"
     hostnames:
     - "minio"
   containers:
