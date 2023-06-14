@@ -1,35 +1,42 @@
 apiVersion: v1
-kind: pod
+kind: ConfigMap
 metadata:
-  name: fluent-bit
+  name: fluent-bit-configmap
 data:
   fluent-bit.conf: |
     [INPUT]
-        Name cpu
-        Tag cpu
+        Name cpu
+        Tag cpu
     [OUTPUT]
         Name s3
         Match *
         tls.verify false
-        log_key log
-        bucket bucket_details
-        endpoint URL
-        s3_key_format /to/the/path/file_%Y%M%D.log
+        #log_key log
+        bucket ntrwsms/portal
+        endpoint https://minio:30000
+        total_file_size 1M
         store_dir /data/ec2-user/buffer
+        s3_key_format /testing/cpu.log
         static_file_path true
+
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fluent-bit
 spec:
   hostAliases:
-  - ip: "IP_Address"
-    hostnames:
-    - "minio"
+  - ip: "ip"
+    hostnames: [ "minio" ]
   containers:
   - name: fluent-bit
-    image: klstg-docker.slb-wartifactory-v.stg.rmn.local/mobileum/wsms/fluent-bit:2.1
+    image: fluent-bit:2.1
     env:
     - name: AWS_ACCESS_KEY_ID
-      value: "AWS_ACCESS_KEY_ID_value"
+      value: "AWS_ACCESS_KEY_ID"
     - name: AWS_SECRET_ACCESS_KEY
-      value: "AWS_SECRET_ACCESS_KEY_value"
+      value: "AWS_ACCESS_KEY_ID"
     command: ["/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf"]
     volumeMounts:
       - mountPath: /fluent-bit/etc/
